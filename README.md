@@ -229,6 +229,15 @@ julia> for T = {Int8,Int16,Int32,Int64,Int128,Uint8,Uint16,Uint32,Uint64,Uint128
 Uint128: [0,340282366920938463463374607431768211455]
 ```
 3. 注意**溢出**和**除法错误**
+4. 数字分隔符可以使数字位数更加清晰,建议大家在写多位数字的时候，使用数字分隔符。
+```
+julia> a = 100_000
+100000
+
+julia> a = 100_0000_0000
+10000000000
+```
+
 #### 浮点数
 1. 浮点数类型中存在 两个零 ，正数的 零和负数的零。它们相等，但有着不同的二进制表示，可以使用 bits 函数看出：
 ```
@@ -451,3 +460,70 @@ julia> 5//-15
 ```
 
 ### 五、字符串
+#### 字符
+- Char 表示单个字符：它是 32 位整数，值参见 Unicode 码位;Char 必须使用单引号; 可以把 Char 转换为对应整数值
+- 可以把 Char 转换为对应整数值,并非所有的整数值都是有效的 Unicode 码位，但为了性能， Char 一般不检查其是否有效。如果你想要确保其有效，使用 isvalid 函数
+```
+julia> 'x'
+'x'
+julia> typeof(ans)
+Char
+
+julia> Int('x')
+120
+julia> typeof(ans)
+Int64
+
+julia> Char(0x110000)
+'\U110000'
+julia> isvalid(Char, 0x110000)
+false
+```
+#### 字符串基础
+- 字符串文本放在**一对或三对儿**双引号之间
+- 使用索引从字符串提取字符; 在任何索引表达式中，关键词 end 都是最后一个索引值（由 endof(str) 计算得到）的缩写。可以对字符串做 end 算术或其它运算
+```
+julia> str = "Hello, world.\n"
+"Hello, world.\n"
+julia> str[end]
+'\n'
+julia> str[end-1]
+'.'
+```
+- 使用范围索引来提取子字符串. str\[k] 和 str\[k:k] 的结果不同, 前者是类型为 Char 的单个字符，后者为仅有一个字符的字符串。在 Julia 中这两者完全不同。
+```
+julia> str[4:9]
+"lo, wo"
+julia> str[6]
+','
+julia> str[6:6]
+","
+```
+#### [Unicode 和 UTF-8](http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/strings/#unicode-utf-8)
+略
+#### [内插](http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/strings/#man-string-interpolation)
+待补
+#### [Triple-Quoted String Literals](http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/strings/#triple-quoted-string-literals)
+待补
+#### [一般操作](http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/strings/#id8)
+待补（包含 正则表达式、字节数组文本和版本号常量）
+
+### 六、[函数](http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/functions/)
+### 七、[控制流](http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/control-flow/)
+### 八、[变量的作用域](http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/variables-and-scoping/)
+### 九、[类型](http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/types/)
+### 十、[方法](http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/methods/)
+### 十一、[构造函数](http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/constructors/)
+### 十二、[类型转换和类型提升](http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/conversion-and-promotion/)
+### 十三、[模块](http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/modules/)
+### 十四、[元编程](http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/metaprogramming/)
+### 十五、[多维数组](http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/arrays/)
+### 十六、[线性代数](http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/linear-algebra/)
+### 十七、[多维数组](http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/arrays/)
+### 十八、[线性代数](http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/linear-algebra/)
+### 十九、[代码性能优化](http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/performance-tips/)
+### 二十、[代码样式](http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/style-guide/)
+### 二十一、[与其他语言的区别](http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/noteworthy-differences/)
+
+
+### 跳过：高级部分（网络和流，并行计算，包，宏等等……）
