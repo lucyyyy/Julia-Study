@@ -502,14 +502,187 @@ julia> str[6:6]
 #### [Unicode 和 UTF-8](http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/strings/#unicode-utf-8)
 略
 #### [内插](http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/strings/#man-string-interpolation)
-待补
-#### [Triple-Quoted String Literals](http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/strings/#triple-quoted-string-literals)
-待补
-#### [一般操作](http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/strings/#id8)
-待补（包含 正则表达式、字节数组文本和版本号常量）
+- 字符串的连接和内插：
+```
+julia> greet = "Hello"
+"Hello"
+julia> whom = "world"
+"world"
+julia> string(greet, ", ", whom, ".\n")
+"Hello, world.\n"
+
+julia> "$greet, $whom.\n"
+"Hello, world.\n"
+julia> "1 + 2 = $(1 + 2)"
+"1 + 2 = 3"
+```
+- 字符串连接和内插都调用 string 函数来把对象转换为 String 。与在交互式会话中一样，大多数非 String 对象被转换为字符串;要在字符串文本中包含 $ 文本，应使用反斜杠将其转义
+```
+julia> v = [1,2,3]
+3-element Array{Int64,1}:
+ 1
+ 2
+ 3
+julia> "v: $v"
+"v: [1,2,3]"
+
+julia> print("I have \$100 in my account.\n")
+I have $100 in my account.
+```
+#### 一般操作
+1. 比较：使用标准比较运算符，按照字典顺序比较字符串
+2. 查找：使用search()函数查找某个字符的索引值；可以通过提供第三个参数，从此偏移值开始查找
+3. 重复：repeat()
+```
+julia> "abracadabra" < "xylophone"
+true
+julia> "Hello, world." != "Goodbye, world."
+true
+
+julia> search("xylophone", 'p')
+5
+julia> search("xylophone", 'o')
+4
+julia> search("xylophone", 'o', 5)
+7
+julia> search("xylophone", 'o', 8)
+0
+
+julia> repeat(".:Z:.", 10)
+".:Z:..:Z:..:Z:..:Z:..:Z:..:Z:..:Z:..:Z:..:Z:..:Z:."
+```
+#### [非标准字符串文本](http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/strings/#man-non-standard-string-literals)
+略
 
 ### 六、[函数](http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/functions/)
+Julia 中的函数是将一系列**参数组成的元组**映设到一个返回值的对象，Julia 的函数**不是纯的数学式函数**，有些函数可以改变或者影响程序的全局状态。
+- 定义函存在基本语法和赋值形式两种；对于赋值形式，函数体通常是单表达式，但也可以为复合表达式。
+```
+function f(x,y)
+  x + y
+end
+
+f(x,y) = x + y
+```
+- 使用圆括号来调用函数; 没有圆括号时， f 表达式指向的是函数对象，这个函数对象可以像值一样被传递：
+```
+julia> f(2,3)
+5
+
+julia> g = f;
+julia> g(2,3)
+5
+```
+- 调用函数有两种方法：使用特定函数名的特殊运算符语法，或者使用 apply 函数(apply 函数把第一个参数当做函数对象，应用在后面的参数上)
+```
+julia> apply(f,2,3)
+5
+```
+- Julia 函数的参数遵循 “pass-by-sharing” 的惯例，即不传递值，而是传递引用。
+#### return关键字
+函数返回值通常是函数体中最后一个表达式的值。对比下列两个函数：
+```
+f(x,y) = x + y
+function g(x,y)
+  return x * y
+  x + y
+end
+
+julia> f(2,3)
+5
+julia> g(2,3)
+6
+```
+在纯线性函数体*【我理解就是只执行end前的那个式子？】*，比如 g 中，不需要使用 return ，可以把 x * y 作为函数的最后一个表达式，并省略 return 。只有涉及其它控制流时， return 才有用。比如：
+```
+function hypot(x,y)
+  x = abs(x)
+  y = abs(y)
+  if x > y
+    r = y/x
+    return x*sqrt(1+r*r)
+  end
+  if y == 0
+    return zero(x)
+  end
+  r = x/y
+  return y*sqrt(1+r*r)
+end
+```
+#### 函数运算符
+Julia 中，大多数运算符都是支持特定语法的函数。 && 、 || 等短路运算是例外，它们不是函数，因为**短路求值** 先算前面的值，再算后面的值。 对于函数运算符，可以像其它函数一样，把参数列表用圆括号括起来，作为函数运算符的参数：
+```
+julia> +(1,2,3)
+6
+julia> f = +;
+julia> f(1,2,3)
+6
+```
+#### 匿名函数 [http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/functions/#man-anonymous-functions]
+#### 多返回值
+#### 变参函数
+#### 可选参数
+#### 关键字参数
+#### 默认值的求值作用域
+#### 函数参数的块语法
+
 ### 七、[控制流](http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/control-flow/)
+Julia 提供一系列控制流：
+- 复合表达式 ： begin 和 (;)
+- 条件求值 ： if-elseif-else 和 ?: (ternary operator)
+- 短路求值 ： &&, || 和 chained comparisons
+- 重复求值: 循环 ： while 和 for
+- 异常处理 ： try-catch ， error 和 throw
+- 任务（也称为协程） ： yieldto
+前五个控制流机制是高级编程语言的标准。但任务不是：它提供了非本地的控制流，便于在临时暂停的计算中进行切换。在 Julia 中，异常处理和协同多任务都是使用的这个机制。
+#### 复合表达式
+用一个表达式按照顺序对一系列子表达式**求值**，并**返回最后一个**子表达式的值，有两种方法： begin 块和 (;) 链。 
+begin 块的例子：
+```
+julia> z = begin
+         x = 1
+         y = 2
+         x + y
+       end
+3
+```
+ 可以用(;) 链语法将其放在一行上(这个语法在 函数 中的单行函数定义非常有用)：
+ ```
+julia> z = (x = 1; y = 2; x + y)
+3
+ ```
+begin 块也可以写成单行， (;) 链也可以写成多行：*【这个也太强行了吧……一点都没有美感】*
+```
+julia> begin x = 1; y = 2; x + y end
+3
+julia> (x = 1;
+        y = 2;
+        x + y)
+3
+```
+#### 条件求值
+if-elseif-else*【跟各家语言都一样】*
+**但是**，如果条件表达式的值是除 true 和 false 之外的值，会出错：
+```
+julia> if 1
+         println("true")
+       end
+ERROR: type: non-boolean (Int64) used in boolean context
+```
+“问号表达式”语法 ?:    a ? b : c
+三选一的例子需要链式调用问号表达式;链式问号表达式的结合规则是从右到左*【就是从左到右写，更好理解一些】*
+```
+julia> test(x, y) = println(x < y ? "x is less than y"    :
+                            x > y ? "x is greater than y" : "x is equal to y")
+```
+#### 短路求值
+&& 和 || 布尔运算符被称为短路求值，它们连接一系列布尔表达式，仅计算最少的表达式来确定整个链的布尔值。这意味着：
+- 在表达式 a && b 中，只有 a 为 true 时才计算子表达式 b
+- 在表达式 a || b 中，只有 a 为 false 时才计算子表达式 b
+&& 和 || 都与右侧结合，但 && 比 || 优先级高：
+
+
+
 ### 八、[变量的作用域](http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/variables-and-scoping/)
 ### 九、[类型](http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/types/)
 ### 十、[方法](http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/methods/)
