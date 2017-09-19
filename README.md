@@ -501,7 +501,7 @@ julia> str[6:6]
 ```
 #### [Unicode 和 UTF-8](http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/strings/#unicode-utf-8)
 略
-#### [内插](http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/strings/#man-string-interpolation)
+#### 内插
 - 字符串的连接和内插：
 ```
 julia> greet = "Hello"
@@ -554,7 +554,7 @@ julia> repeat(".:Z:.", 10)
 #### [非标准字符串文本](http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/strings/#man-non-standard-string-literals)
 略
 
-### 六、[函数](http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/functions/)
+### 六、函数
 Julia 中的函数是将一系列**参数组成的元组**映设到一个返回值的对象，Julia 的函数**不是纯的数学式函数**，有些函数可以改变或者影响程序的全局状态。
 - 定义函存在基本语法和赋值形式两种；对于赋值形式，函数体通常是单表达式，但也可以为复合表达式。
 ```
@@ -618,7 +618,13 @@ julia> f = +;
 julia> f(1,2,3)
 6
 ```
-#### 匿名函数 [http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/functions/#man-anonymous-functions]
+#### 匿名函数
+
+
+
+
+
+
 #### 多返回值
 #### 变参函数
 #### 可选参数
@@ -626,7 +632,7 @@ julia> f(1,2,3)
 #### 默认值的求值作用域
 #### 函数参数的块语法
 
-### 七、[控制流](http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/control-flow/)
+### 七、控制流
 Julia 提供一系列控制流：
 - 复合表达式 ： begin 和 (;)
 - 条件求值 ： if-elseif-else 和 ?: (ternary operator)
@@ -680,10 +686,316 @@ julia> test(x, y) = println(x < y ? "x is less than y"    :
 - 在表达式 a && b 中，只有 a 为 true 时才计算子表达式 b
 - 在表达式 a || b 中，只有 a 为 false 时才计算子表达式 b
 && 和 || 都与右侧结合，但 && 比 || 优先级高：
+```
+julia> t(x) = (println(x); true)
+t (generic function with 1 method)
+julia> f(x) = (println(x); false)
+f (generic function with 1 method)
+julia> f(1) && t(2)
+1
+false
+julia> t(1) || f(2)
+1
+true
+```
+这种方式在 Julia 里经常作为短 if 语句的一个简洁的替代。可以把 if <cond> <statement> end 写成 <cond> && <statement> (读作 <cond> 从而 <statement>)。 类似地，可以把 if ! <cond> <statement> end 写成 <cond> || <statement> (读作 <cond> 要不就 <statement>)。
+  
+*【感觉这个会很方便哦~】*
+例如, 递归阶乘可以这样写:
+```
+julia> function factorial(n::Int)
+           n >= 0 || error("n must be non-negative")   #注意error的写法哦~
+           n == 0 && return 1
+           n * factorial(n-1)
+       end
+factorial (generic function with 1 method)
+```
+- 短路求值的运算对象也必须是布尔值（1,0都不行）；除了最后一项外，在短路求值中使用非布尔值是一个错误：短路求值的最后一项可以是任何类型的表达式。取决于之前的条件，它可以被求值并返回。
+- **非短路**求值运算符，可以使用位布尔运算符 & 和 | ：
+```
+julia> f(1) & t(2)
+1
+2
+false
+
+julia> t(1) | t(2)
+1
+2
+true
+```
+#### 重复求值：循环
+- while循环和for循环，可互相改写*【也是大同小异咯】*
+- while 循环和 for 循环的一区别是变量的作用域。如果在其它作用域中没有引入变量 i ，那么它仅存在于 for 循环中。
+```
+julia> i = 1;
+julia> while i <= 5
+         println(i)
+         i += 1
+       end
+julia> for i = 1:5
+         println(i)
+       end
+```
+for循环中 1:5 是一个range对象，表示一个序列；for循环遍历这个序列，把值逐一赋给i;通常，for循环可以遍历任意容器。这时，应使用另一个（但是完全等价的）关键词 in ，而不是 = ，它使得代码更易阅读：
+```
+julia> for i in [1,4,0]
+         println(i)
+       end
+1
+4
+0
+```
+多层 for 循环可以被**重写为一个外层循环**:
+```
+
+julia> for i = 1:2, j = 3:4
+         println((i, j))
+       end
+```
+**关键字**break和continue，分别用于**提前终止循环**和**中断本次循环，进行下一次循环**
+但如果在多层for循环被写成外层循环的情况下使用break会直接跳出所有循环，而不仅仅是最内层循环。
+```
+julia> i = 1;
+julia> while true
+         println(i)
+         if i >= 5
+           break
+         end
+         i += 1
+       end
+1
+2
+3
+4
+5
+
+julia> for i = 1:10
+         if i % 3 != 0
+           continue
+         end
+         println(i)
+       end
+3
+6
+9
+```
+#### 异常处理
+**内置异常 exception**：如果程序遇到意外条件，异常将会被抛出。表中列出内置异常（略）。可以自己定义自己的异常：
+```
+julia> type MyCustomException <: Exception end   #【那个符号是什么鬼？？谁来告诉我~我猜是导出的意思】
+```
+**throw 函数**
+可以使用 throw 函数显式创建异常。例如，某个函数只对非负数做了定义，如果参数为负数，可以抛出 DomaineError 异常
+```
+julia> f(x) = x>=0 ? exp(-x) : throw(DomainError())
+f (generic function with 1 method)
+```
+- 注意， DomainError 使用时需要使用带括号的形式，否则返回的并不是异常，而是异常的类型。必须带括号才能返回 Exception 对象
+```
+julia> typeof(DomainError()) <: Exception
+true
+
+julia> typeof(DomainError) <: Exception
+false
+```
+- 某些异常接受参数，在自定义异常中，也可以设置参数：
+```
+julia> throw(UndefVarError(:x))
+ERROR: x not defined
+
+julia> type MyUndefVarError <: Exception   #自定义
+           var::Symbol
+       end
+julia> Base.showerror(io::IO, e::MyUndefVarError) = print(io, e.var, " not defined");
+```
+**error函数**
+error 函数用来产生 ErrorException ，阻断程序的正常执行。如下改写 sqrt 函数,当对负数调用fussy_sqrt 时，它会立即返回，显示错误信息
+```
+julia> fussy_sqrt(x) = x >= 0 ? sqrt(x) : error("negative x not allowed")
+fussy_sqrt (generic function with 1 method)
+
+julia> function verbose_fussy_sqrt(x)
+         println("before fussy_sqrt")
+         r = fussy_sqrt(x)
+         println("after fussy_sqrt")
+         return r
+       end
+verbose_fussy_sqrt (generic function with 1 method)
+
+julia> verbose_fussy_sqrt(2)
+before fussy_sqrt
+after fussy_sqrt
+1.4142135623730951
+
+julia> verbose_fussy_sqrt(-1)
+before fussy_sqrt
+ERROR: negative x not allowed
+ in verbose_fussy_sqrt at none:3
+```
+**warn和info函数**
+用来向标准错误 I/O 输出一些消息，但不抛出异常，因而并不会打断程序的执行：
+```
+julia> info("Hi"); 1+1
+INFO: Hi
+2
+
+julia> warn("Hi"); 1+1
+WARNING: Hi
+2
+
+julia> error("Hi"); 1+1
+ERROR: Hi
+ in error at error.jl:21
+```
+**try/catch语句**
+try/catch 语句可以用于处理一部分预料中的异常 Exception 。例如，下面求平方根函数可以正确处理实数或者复数([但是处理异常比正常采用分支来处理，会慢得多。])：
+```
+julia> f(x) = try
+         sqrt(x)
+       catch
+         sqrt(complex(x, 0))
+       end
+f (generic function with 1 method)
+
+julia> f(1)
+1.0
+julia> f(-1)
+0.0 + 1.0im
+```
+try/catch 语句使用时也可以把异常赋值给某个变量。例如：
+```
+julia> sqrt_second(x) = try
+         sqrt(x[2])
+       catch y
+         if isa(y, DomainError)    #isa(): 判断输入参量是否为指定类型的对象
+           sqrt(complex(x[2], 0))
+         elseif isa(y, BoundsError)
+           sqrt(x)
+         end
+       end
+sqrt_second (generic function with 1 method)
+```
+注意，紧跟 catch 的符号会作为异常的名字，所以在将 try/catch 写在单行内的时候需要特别注意。下面第一行代码不会在发生错误的时候返回 x 的值;相对的，使用分号或在 catch 后另起一行:
+```
+try bad() catch x end
+
+try bad() catch; x end   #【那这种还catch到东西了咩？？？？？】
+try bad()
+catch
+  x
+end
+```
+**finally语句**
+在改变状态或者使用文件等资源时，通常需要在操作执行完成时做清理工作（比如关闭文件）。异常的存在使得这样的任务变得复杂，因为异常会导致程序提前退出。关键字 finally 可以解决这样的问题，**无论程序是怎样退出的， finally 语句总是会被执行。**
+```
+f = open("file")
+try
+    # operate on file f
+finally
+    close(f)
+end
+```
+#### [任务（也称为协程)](http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/control-flow/#man-tasks)
+略（宝宝实在看不懂）
+
+### 八、变量的作用域
+作用域是变量可见的区域,能帮助避免变量命名冲突。
+**作用域块** 是作为变量作用域的代码区域。变量的作用域被限制在这些块内部。作用域块有：
+- function 函数体（或 语法 ）- while 循环体 - for 循环体 - try 块 - catch 块 - let 块 - type 块
+注意: **begin块不能**引入新作用域块。
+
+当变量被引入到一个作用域中时，所有的**内部作用域都继承**了这个变量，除非某个内部作用域显式复写了它。将新变量引入当前作用域的方法：
+- 声明 local x 或 const x ，可以引入新本地变量
+- 声明 global x 使得 x 引入当前作用域和更内层的作用域
+- 函数的参数，作为新变量被引入函数体的作用域
+- 无论是在当前代码之前或 之后 ， x = y 赋值都将引入新变量 x ，除非 x 已经在任何外层作用域内被声明为全局变量或被引入为本地变量
+- 在非顶层作用域给全局变量赋值的唯一方法，是在某个作用域中显式声明变量是全局的。否则，赋值会引入新的局部变量，而不是给全局变量赋值。
+
+下例中，循环体有一个独立的 x ，函数始终返回 0 ：
+```
+function foo(n)
+  x = 0
+  for i = 1:n
+    local x
+    x = i
+  end
+  x
+end
+
+julia> foo(10)
+0
+```
+不必在内部使用前，就在外部赋值引入 x ：
+```
+function foo(n)
+  f = y -> n + x + y   # ->表示引用 f为一个匿名函数 y为input n+x+y为output  （by 小亮）
+  x = 1
+  f(2)
+end
+julia> foo(10)
+13
+```
+在交互式模式下，可以假想有一层作用域块包在任何输入之外，类似于全局作用域：
+```
+julia> for i = 1:1; y = 10; end
+
+julia> y
+ERROR: y not defined
+
+julia> y = 0    #由于会话的作用域类似于全局作用域，因此不必声明gloabl
+0
+julia> for i = 1:1; y = 10; end
+julia> y
+10
+```
+使用以下的语法形式，可以将多个变量声明为全局变量:
+```
+function foo()
+    global x=1, y="bar", z=3
+end
+
+julia> foo()
+3
+julia> x
+1
+```
+- let 语句提供了另一种引入变量的方法。 let 语句每次运行都会声明新变量。 let 语法接受**由逗号隔开**的赋值语句或者变量名：
+```
+let var1 = value1, var2, var3 = value3
+    code
+end
+```
+由于 begin 块并不引入新作用域块，使用 let 来引入新作用域块是很有用的：
+```
+julia> begin
+         local x = 1
+         begin
+           local x = 2
+         end
+         x
+       end
+ERROR: syntax: local "x" declared twice
+
+julia> begin
+         local x = 1
+         let
+           local x = 2
+         end
+         x
+       end
+1
+```
+#### [For 循环及 Comprehensions](http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/variables-and-scoping/#for-comprehensions)
+略
+#### 常量
+- const 可以声明全局常量和局部常量，最好用它来声明全局常量。全局变量的值（甚至类型）可能随时会改变，编译器很难对其进行优化。如果全局变量不改变的话，可以添加一个 const 声明来解决性能问题。本地变量则不同。编译器能自动推断本地变量是否为常量，所以本地常量的声明不是必要的。
+- 特殊的顶层赋值默认为常量，如使用 function 和 type 关键字的赋值。*【这句不懂！！！】*
+- 注意 const 仅对变量的绑定有影响；变量有可能被绑定到可变对象（如数组），这个对象仍能被修改。
 
 
 
-### 八、[变量的作用域](http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/variables-and-scoping/)
+
+
 ### 九、[类型](http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/types/)
 ### 十、[方法](http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/methods/)
 ### 十一、[构造函数](http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/constructors/)
