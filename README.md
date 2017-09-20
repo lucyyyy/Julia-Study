@@ -1188,10 +1188,10 @@ x::Int8 = 10   # as the left-hand side of an assignment
 ### 十五、[多维数组](http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/arrays/)
 ### 十六、[线性代数](http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/linear-algebra/)
 ### 十七、[多维数组](http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/arrays/)
-### 十八、[线性代数](http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/linear-algebra/)
-### 十九、[代码性能优化](http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/performance-tips/)
-### 二十、[代码样式](http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/style-guide/)
-### 二十一、[与其他语言的区别](http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/noteworthy-differences/)
+
+### 十八、[代码性能优化](http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/performance-tips/)
+### 十九、[代码样式](http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/style-guide/)
+### 二十、[与其他语言的区别](http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/noteworthy-differences/)
 
 
 ### 跳过：高级部分（网络和流，并行计算，包，宏等等……）
