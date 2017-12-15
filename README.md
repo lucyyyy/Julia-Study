@@ -797,6 +797,7 @@ map([A, B, C]) do x
 end
 ```
 do x 语法会建立一个以 x 为参数的匿名函数，并将其作为第一个参数传递给 map . 类似地， do a,b 会创造一个含双参数的匿名函数，而一个普通的do将声明其后是一个形式为() -> ...的匿名函数。
+
 #### [延伸阅读](http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/functions/#id14)
 关于多重派发（略）
 
@@ -880,6 +881,7 @@ julia> function factorial(n::Int)
 factorial (generic function with 1 method)
 ```
 - 短路求值的运算对象也必须是布尔值（1,0都不行）；除了最后一项外，在短路求值中使用非布尔值是一个错误：短路求值的最后一项可以是任何类型的表达式。取决于之前的条件，它可以被求值并返回。
+
 - **非短路**求值运算符，可以使用位布尔运算符 & 和 | ：
 ```
 julia> f(1) & t(2)
@@ -1205,8 +1207,49 @@ local x::Int8  # in a local declaration
 x::Int8 = 10   # as the left-hand side of an assignment
 ```
 #### 抽象类型
-#### 位类型
+
+- 抽象类型不能被实例化，它组织了类型等级关系，方便程序员编程。如，编程时可针对任意整数类型，而不需指明是哪种具体的整数类型。
+- 使用 abstract 关键字声明， <: 表示继承（声明继承或判断是否继承）
+- Julia的默认父类型和子类型（顶峰和底）是 Any 和 None
+- 抽象类型的一个重要用途是为具体的类型提供默认实现(overload)
+```
+abstract Number
+abstract Real     <: Number
+abstract FloatingPoint <: Real
+abstract Integer  <: Real
+abstract Signed   <: Integer
+abstract Unsigned <: Integer
+
+julia> Integer <: Number
+true
+```
+
+#### [位类型](http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/types/#id5)
+略
+
 #### 复合类型
+- 也称为记录、结构或对象,是变量名域的集合。
+- 使用 type 关键字来定义复合类型
+```
+julia> type Foo
+         bar
+         baz::Int
+         qux::Float64
+       end
+       
+#构建复合类型 Foo 的对象：
+julia> foo = Foo("Hello, world.", 23, 1.5)
+Foo("Hello, world.",23,1.5)
+
+julia> typeof(foo)
+Foo (constructor with 2 methods)
+```
+构造函数：
+当一个类型像函数一样被调用时，它可以被叫做类型构造函数（constructor)。 每个类型有两种构造函数是自动被生成的（它们被叫做*默认构造函数*)。 第一种是当传给构造函数的参数和这个类型的字段类型不一一匹配时，构造函数会把它的参数传给 convert 函数，并且转换到这个类型相应的字段类型。 第二种是当传给构造函数的每个参数和这个类型的字段类型都一一相同时，构造函数直接生成类型。 要自动生成两种默认构造函数的原因是：为了防止用户在声明别的新变量的时候不小心把构造函数给覆盖掉。
+
+
+
+
 #### 不可变复合类型
 #### 被声明类型
 #### 多元组类型
