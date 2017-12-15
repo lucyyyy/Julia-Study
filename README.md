@@ -1031,7 +1031,7 @@ finally
 end
 ```
 #### [任务（也称为协程)](http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/control-flow/#man-tasks)
-略（宝宝实在看不懂）
+略（宝宝实在看不懂）  17.12.15update: 操作系统里讲的 生产者-消费者问题，协程提供效率
 
 ### 八、变量的作用域
 作用域是变量可见的区域,能帮助避免变量命名冲突。
