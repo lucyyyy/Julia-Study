@@ -1,5 +1,12 @@
 # Julia-Study
 
+## 目录
+* 单独教程：变量，类型和函数(#1)
+* 单独教程：多维数组 (#2)
+* 官方手册(#3)
+* 一.变量 (#3.1)
+
+<h2 id="1">[变量，类型和函数](http://www.justinablog.com/archives/1594)</h2>
 ## [变量，类型和函数](http://www.justinablog.com/archives/1594)
 
 ### 变量 与 数值运算
