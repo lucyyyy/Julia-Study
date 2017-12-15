@@ -2,9 +2,9 @@
 
 ## 目录
 * [单独教程：变量，类型和函数](#1)
-* [单独教程：多维数组] (#2)
+* [单独教程：多维数组](#2)
 * [官方手册](#3)
-* [一.变量] (#3.1)
+* [一.变量](#3.1)
 
 <h2 id="1">[变量，类型和函数](http://www.justinablog.com/archives/1594)</h2>
 
@@ -87,8 +87,7 @@ function parseint(num, base=10)
    ###
 end
 ```
-
-## [多维数组](http://www.justinablog.com/archives/1604)
+<h2 id="2">[多维数组](http://www.justinablog.com/archives/1604)</h2>
 
 ### 数组
 
@@ -200,7 +199,9 @@ julia> l'' # 再次转置变成了一个矩阵
 ***
 ***
 ***
-## [Follow the Manual](http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/variables/)
+
+<h2 id="3">[Follow the Manual](http://julia-zh-cn.readthedocs.io/zh_CN/latest/manual/variables/)</h2>
+<h2 id="3.1">一、变量</h2>
 ### 一、变量
 1. 变量的意义：存储一个值以后备用
 2. Julia中变量名区分大小写，也可以使用Unicode（utf-8)来命名；其中unicode中一些数学符号只需要输入对应的Latex语句，然后按Tab完成输入，e.g.变量名 δ 可以通过 \delta-tab 来输入，又如 α̂₂可以由 \alpha-tab-\hat-tab-\_2-tab 来完成。
